@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI Resume Builder — build an ATS-friendly resume through a guided AI interview." />
+  <title>ResumeAI — AI Resume Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark">R</span>
+        <span>Resume<span class="brand-accent">AI</span></span>
+      </a>
+      <div class="topbar-center">
+        <div class="step active"><span>1</span> Interview</div>
+        <div class="step-line"></div>
+        <div class="step"><span>2</span> Review</div>
+        <div class="step-line"></div>
+        <div class="step"><span>3</span> Resume</div>
+      </div>
+      <div class="topbar-actions">
+        <span id="saveStatus" class="save-status">● Ready</span>
+        <button id="newChatBtn" class="ghost-btn" type="button">New resume</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="chat-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">AI RESUME INTERVIEW</p>
+            <h1>Let’s build your resume.</h1>
+            <p class="muted">Tell me about your experience naturally. I’ll organize the details for you.</p>
+          </div>
+          <div class="ai-badge"><span class="pulse"></span> AI online</div>
+        </div>
+
+        <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+
+        <div class="suggestions" id="suggestions">
+          <button type="button" data-suggestion="I’m a fresher and I’m looking for software development roles.">Fresher</button>
+          <button type="button" data-suggestion="I have work experience in software development.">Experienced</button>
+          <button type="button" data-suggestion="I want to target a specific job description.">Target a job</button>
+        </div>
+
+        <form id="chatForm" class="composer">
+          <textarea id="messageInput" rows="1" placeholder="Type your answer…" autocomplete="off"></textarea>
+          <button id="sendBtn" class="send-btn" type="submit" aria-label="Send message">
+            <span>Send</span><span class="send-icon">↗</span>
+          </button>
+        </form>
+        <p class="composer-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift</kbd> + <kbd>Enter</kbd> for a new line</p>
+      </section>
+
+      <aside class="profile-panel">
+        <div class="profile-header">
+          <div>
+            <p class="eyebrow">PROFILE</p>
+            <h2>Your resume data</h2>
+          </div>
+          <div id="completion" class="completion">0%</div>
+        </div>
+
+        <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+
+        <div class="profile-grid">
+          <div class="profile-card" data-section="contact">
+            <div class="card-icon">⌁</div>
+            <div><strong>Contact</strong><span id="contactSummary">Not collected</span></div>
+            <span class="card-check" id="contactCheck">○</span>
+          </div>
+          <div class="profile-card" data-section="experience">
+            <div class="card-icon">⌘</div>
+            <div><strong>Experience</strong><span id="experienceSummary">Not collected</span></div>
+            <span class="card-check" id="experienceCheck">○</span>
+          </div>
+          <div class="profile-card" data-section="education">
+            <div class="card-icon">◇</div>
+            <div><strong>Education</strong><span id="educationSummary">Not collected</span></div>
+            <span class="card-check" id="educationCheck">○</span>
+          </div>
+          <div class="profile-card" data-section="skills">
+            <div class="card-icon">✦</div>
+            <div><strong>Skills</strong><span id="skillsSummary">Not collected</span></div>
+            <span class="card-check" id="skillsCheck">○</span>
+          </div>
+          <div class="profile-card" data-section="projects">
+            <div class="card-icon">▣</div>
+            <div><strong>Projects</strong><span id="projectsSummary">Not collected</span></div>
+            <span class="card-check" id="projectsCheck">○</span>
+          </div>
+          <div class="profile-card" data-section="certifications">
+            <div class="card-icon">◈</div>
+            <div><strong>Certifications</strong><span id="certificationsSummary">Optional</span></div>
+            <span class="card-check" id="certificationsCheck">○</span>
+          </div>
+        </div>
+
+        <div id="resumeCard" class="resume-card">
+          <div class="resume-card-top">
+            <div>
+              <p class="eyebrow">FINAL OUTPUT</p>
+              <h3>Your ATS resume</h3>
+            </div>
+            <span class="lock">⌑</span>
+          </div>
+          <p id="resumeMessage">Complete the interview and I’ll generate a polished, ATS-friendly resume here.</p>
+          <button id="viewResumeBtn" class="primary-btn" type="button" disabled>Generate / view resume <span>→</span></button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="resumeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="resumeTitle">
+    <div class="modal-backdrop" data-close></div>
+    <div class="resume-modal">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">GENERATED RESUME</p>
+          <h2 id="resumeTitle">Your ATS-ready resume</h2>
+        </div>
+        <div class="modal-actions">
+          <button id="downloadBtn" class="ghost-btn" type="button">Download</button>
+          <button class="close-btn" data-close type="button" aria-label="Close">×</button>
+        </div>
+      </div>
+      <pre id="resumeContent" class="resume-content"></pre>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
